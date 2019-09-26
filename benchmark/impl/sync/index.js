@@ -11,29 +11,31 @@
  * - Main event loop is blocked during worker action.
  *
  * @param {Object} opts         options object
+ * @param {Number} opts.conc    concurrency
  * @param {Number} opts.worker  path to worker script
  * @param {Array}  opts.args    arguments array for worker script
  * @returns {Promise}           execution result in a promise
  */
-module.exports = ({ worker, args }) => {
+module.exports = async ({ conc, worker, args }) => {
   if (!worker) {
-    return Promise.reject(new Error("worker script path is required"));
+    throw new Error("worker script path is required");
   }
 
-  let workerFn;
-  try {
-    workerFn = require(worker); // eslint-disable-line global-require
-  } catch (err) {
-    return Promise.reject(err);
+  const workerFn = require(worker); // eslint-disable-line global-require
+
+  const results = [];
+  for (let i = 0; i < conc; i++) {
+    results.push(await workerFn.render(args));
   }
 
-  return workerFn.render(args);
+  return results;
 };
 
 // For manual testing:
 // $ node benchmark/impl/sync 20
 if (require.main === module) {
   module.exports({
+    conc: 2,
     worker: require.resolve("../../scenarios/react/index"),
     args: {
       // eslint-disable-next-line no-magic-numbers

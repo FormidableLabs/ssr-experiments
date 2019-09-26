@@ -67,8 +67,8 @@ const IMPLS = {
 };
 const DEMOS = {
   "react": [
-    { name: "1", repeat: 1, compare: comparePrefixAndLength },
-    { name: "1K", repeat: 1000, compare: comparePrefixAndLength }
+    { name: "1", repeat: 1, compare: comparePrefixAndLength }
+    //{ name: "1K", repeat: 1000, compare: comparePrefixAndLength }
     // TODO: More scenarios
     // { name: "10K", repeat: 10 * 1000 },
     // { name: "50K", repeat: 50 * 1000 }
@@ -112,32 +112,19 @@ const benchmark = module.exports = () => Promise.resolve()
   .then(() => start())
   .then(() => serial(
     MATRIX.map(({ conc, demo, args, impl }) => {
-      const concArr = Array.from(new Array(conc));
-      let implFn = IMPLS[impl];
-      let opts;
-
-      // Allow for implementation objects.
-      if (typeof implFn !== "function") {
-        opts = implFn.opts;
-        implFn = implFn.impl;
-      }
-
+      const implFn = IMPLS[impl];
       let workDone = false;
       let mainCounter = 0;
 
       return () => Promise.all([
         // Run concurrent workers and time **all** at once.
-        timer(() => Promise.all(concArr.map(() =>
-          implFn(Object.assign({
-            worker: path.resolve(__dirname, "../scenarios", demo, "index.js"),
-            args
-          }, opts))
-            .then((result) => {
-              process.stdout.write("."); // progress indicator
-              return result;
-            })
-        )))
+        timer(() => implFn({
+          conc,
+          worker: path.resolve(__dirname, "../scenarios", demo, "index.js"),
+          args
+        }))
           .then((data) => {
+            process.stdout.write("."); // progress indicator
             workDone = true;
             return {
               elapsed: data.elapsed,
