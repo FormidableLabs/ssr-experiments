@@ -1,14 +1,15 @@
 "use strict";
 
+const Worker = require("jest-worker").default;
+
 /**
- * Synchronous work **on** the main event loop.
+ * Asynchronous work using worker threads when available,
  *
  * Advantages:
- * - No startup cost.
- * - No IPC communication / serialization cost.
+ * - TODO
  *
  * Disadvantages
- * - Main event loop is blocked during worker action.
+ * - TODO
  *
  * @param {Object} opts         options object
  * @param {Number} opts.worker  path to worker script
@@ -22,16 +23,24 @@ module.exports = ({ worker, args }) => {
 
   let workerFn;
   try {
-    workerFn = require(worker); // eslint-disable-line global-require
+    workerFn = new Worker(require.resolve(worker));
   } catch (err) {
     return Promise.reject(err);
   }
 
-  return workerFn.render(args);
+  return workerFn.render(args)
+    .then((results) => {
+      workerFn.end();
+      return results;
+    })
+    .catch((err) => {
+      workerFn.end();
+      throw err;
+    });
 };
 
 // For manual testing:
-// $ node benchmark/impl/sync 20
+// $ node benchmark/impl/jest-worker 20
 if (require.main === module) {
   module.exports({
     worker: require.resolve("../../scenarios/react/index"),

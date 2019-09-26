@@ -8,6 +8,7 @@ const strip = require("strip-ansi");
 const { cyan, gray, green, magenta, red } = require("chalk");
 
 const sync = require("../impl/sync/index");
+const jest = require("../impl/jest-worker/index");
 
 // ----------------------------------------------------------------------------
 // Globals
@@ -61,7 +62,8 @@ const stop = () => Promise.resolve();
 // ----------------------------------------------------------------------------
 // Create matrix of implementations to run.
 const IMPLS = {
-  sync
+  sync,
+  jest
 };
 const DEMOS = {
   "react": [

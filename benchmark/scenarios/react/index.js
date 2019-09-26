@@ -31,19 +31,12 @@ const Component = ({ repeat }) => (new Array(repeat)).fill(null).map(() => creat
  * @param {Number} opts.repeat  number of times to repeat string.
  * @returns {Promise}           string result in a promise
  */
-module.exports = (opts) => Promise.resolve()
+const render = (opts) => Promise.resolve()
   .then(() => renderToString(createElement(Component, {
     repeat: opts.repeat
   })));
 
-// For manual testing:
-// $ node benchmark/scenarios/react.js NUMBER
-if (require.main === module) {
-  // eslint-disable-next-line no-magic-numbers
-  module.exports({ repeat: parseInt(process.argv[2] || 1, 10) })
-    .then((val) => console.log(val)) // eslint-disable-line no-console
-    .catch((err) => {
-      console.error("ERROR", err.stack || err); // eslint-disable-line no-console
-      process.exit(1); // eslint-disable-line no-process-exit
-    });
-}
+module.exports = {
+  render
+};
+
