@@ -38,10 +38,12 @@ module.exports = ({ repeat }) => Promise.resolve()
     repeat
   })));
 
+// For manual testing:
+// $ node benchmark/scenarios/react.js NUMBER
 if (require.main === module) {
-  // node benchmark/scenarios/react.js NUMBER
+  // eslint-disable-next-line no-magic-numbers
   module.exports({ repeat: parseInt(process.argv[2] || 1, 10) })
-    .then((val) => console.log(val))
+    .then((val) => console.log(val)) // eslint-disable-line no-console
     .catch((err) => {
       console.error("ERROR", err.stack || err); // eslint-disable-line no-console
       process.exit(1); // eslint-disable-line no-process-exit
