@@ -6,22 +6,20 @@ const { renderToString } = require("react-dom/server");
 const randomColor = () => // eslint-disable-next-line no-magic-numbers, prefer-template
   "#" + ("00000" + Math.floor(Math.random() * 0x1000000).toString(16)).substr(-6);
 
-const Component = ({ repeat }) => { // eslint-disable-line object-shorthand
-  return (new Array(repeat)).fill(null).map(() => createElement(
-    "div",
-    null,
-    createElement(
-      "button",
-      { style: { color: randomColor() } },
-      "Button"
-    ),
-    createElement(
-      "a",
-      { style: { backgroundColor: randomColor() } },
-      "I'm a link"
-    )
-  ));
-};
+const Component = ({ repeat }) => (new Array(repeat)).fill(null).map(() => createElement(
+  "div",
+  null,
+  createElement(
+    "button",
+    { style: { color: randomColor() } },
+    "Button"
+  ),
+  createElement(
+    "a",
+    { style: { backgroundColor: randomColor() } },
+    "I'm a link"
+  )
+));
 
 /**
  * A simple string repeater.
