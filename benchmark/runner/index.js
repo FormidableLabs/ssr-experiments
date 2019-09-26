@@ -14,11 +14,6 @@ const sync = require("../impl/sync/index");
 // ----------------------------------------------------------------------------
 const MAIN_INTERVAL = 1; // ms
 
-const TABLE_OPTS = {
-  align: ["r", "l", "r", "l", "r", "r", "r"],
-  stringLength: (cell) => strip(cell).length // fix alignment with chalk.
-};
-
 // ----------------------------------------------------------------------------
 // Helpers
 // ----------------------------------------------------------------------------
@@ -26,6 +21,9 @@ const TABLE_OPTS = {
 const defaultCompare = (a, b) => a === b;
 const comparePrefixAndLength = (a, b) =>
   a.slice(0, 10) === b.slice(0, 10) && a.length === b.length;
+
+// Table
+const stringLength = (cell) => strip(cell).length; // fix alignment with chalk.
 
 // Timing
 const hrToMs = (hrtime) => Math.floor((hrtime[0] * 1e9 + hrtime[1]) / 1e6, 0);
@@ -83,10 +81,10 @@ const CONCURRENCY = [
 
 // Create matrix of `[concurrency, demo, args, impl]`.
 const MATRIX = Object.keys(DEMOS).reduce(
-  (dMemo, dKey) => dMemo.concat(DEMOS[dKey].reduce(
-    (aMemo, opts) => aMemo.concat(Object.keys(IMPLS).reduce(
+  (dMemo, demo) => dMemo.concat(DEMOS[demo].reduce(
+    (aMemo, args) => aMemo.concat(Object.keys(IMPLS).reduce(
       (iMemo, impl) => iMemo.concat(
-        CONCURRENCY.map((con) => [con, dKey, opts, impl])
+        CONCURRENCY.map((conc) => ({ conc, demo, args, impl }))
       ), []
     )), []
   )), []
@@ -111,12 +109,8 @@ const MATRIX = Object.keys(DEMOS).reduce(
 const benchmark = module.exports = () => Promise.resolve()
   .then(() => start())
   .then(() => serial(
-    MATRIX.map((exp) => {
-      const conc = exp[0];
+    MATRIX.map(({ conc, demo, args, impl }) => {
       const concArr = Array.from(new Array(conc));
-      const demo = exp[1];
-      const args = exp[2];
-      const impl = exp[3];
       let implFn = IMPLS[impl];
       let opts;
 
@@ -163,7 +157,7 @@ const benchmark = module.exports = () => Promise.resolve()
     })
   ))
   .then((results) => {
-    const HEADER = ["Conc", "Demo", "Args", "Impl", "M loops", "W time", "W result"]
+    const HEADER = ["Demo", "Conc", "Args", "Impl", "M loops", "W time", "W result"]
       .map((t) => gray(t));
     const tableData = [HEADER];
 
@@ -173,9 +167,8 @@ const benchmark = module.exports = () => Promise.resolve()
     results.forEach((data, i) => { // eslint-disable-line max-statements
       const work = data[0];
       const main = data[1];
-      const args = MATRIX[i][2];
+      const { args, impl } = MATRIX[i];
       const compare = args.compare || defaultCompare;
-      const impl = MATRIX[i][3];
 
       // Use first result as gold standard.
       const result = work.result[0];
@@ -195,9 +188,9 @@ const benchmark = module.exports = () => Promise.resolve()
       }
 
       tableData.push([
-        cyan(MATRIX[i][0]),
-        cyan(MATRIX[i][1]),
-        magenta(args.name),
+        MATRIX[i].demo,
+        cyan(MATRIX[i].conc),
+        cyan(args.name),
         magenta(impl),
         main,
         work.elapsed,
@@ -205,7 +198,10 @@ const benchmark = module.exports = () => Promise.resolve()
       ]);
     });
 
-    console.log(`\n${table(tableData, TABLE_OPTS)}`); // eslint-disable-line no-console
+    console.log(`\n${table(tableData, { // eslint-disable-line no-console
+      align: ["l", "r", "r", "l", "r", "r", "r"],
+      stringLength
+    })}`);
 
     if (errors) {
       throw new Error(`ERROR: ${errors} executions failed.`);
