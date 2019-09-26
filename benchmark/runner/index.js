@@ -79,6 +79,7 @@ const NUM_CPUS = os.cpus().length;
 const CONCURRENCY = [
   1,
   NUM_CPUS > 1 ? 2 : null,
+  // TODO: Not seeing a linear increase for jest-worker in perf (???)
   NUM_CPUS > 2 ? NUM_CPUS : null
 ].filter(Boolean);
 
