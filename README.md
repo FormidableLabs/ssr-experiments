@@ -78,7 +78,6 @@ $ yarn benchmark
 * os: darwin 18.7.0 x64
 * node: v12.11.0
 
-
 | Demo  | Conc | Args | Impl | M loops | W time | W result |
 | :---- | ---: | ---: | :--- | ------: | -----: | -------: |
 | react |    1 |    1 | sync |       1 |     13 |     pass |

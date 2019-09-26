@@ -24,6 +24,8 @@ module.exports = async ({ conc, worker, args }) => {
 
   const workerFn = new Worker(require.resolve(worker), {
     numWorkers: conc
+    // TODO: This currently fails on Node12 with DataCloneError
+    // enableWorkerThreads: true // use workers if available
   });
 
   const concArr = Array.from(new Array(conc));
