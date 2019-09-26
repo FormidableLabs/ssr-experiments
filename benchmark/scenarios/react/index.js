@@ -31,9 +31,9 @@ const Component = ({ repeat }) => (new Array(repeat)).fill(null).map(() => creat
  * @param {Number} opts.repeat  number of times to repeat string.
  * @returns {Promise}           string result in a promise
  */
-module.exports = ({ repeat }) => Promise.resolve()
+module.exports = (opts) => Promise.resolve()
   .then(() => renderToString(createElement(Component, {
-    repeat
+    repeat: opts.repeat
   })));
 
 // For manual testing:
