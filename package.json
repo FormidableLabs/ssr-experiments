@@ -5,10 +5,10 @@
   "repository": "https://github.com/FormidableLabs/ssr-experiments",
   "author": "Ryan Roemer <ryan.roemer@formidable.com>",
   "license": "MIT",
-  "scripts": {
-  },
-  "dependencies": {
-  },
+  "scripts": {},
+  "dependencies": {},
   "devDependencies": {
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0"
   }
 }
