@@ -1,0 +1,14 @@
+{
+  "name": "ssr-experiments",
+  "version": "0.0.1",
+  "description": "Experiments for SSR off the main event loop.",
+  "repository": "https://github.com/FormidableLabs/ssr-experiments",
+  "author": "Ryan Roemer <ryan.roemer@formidable.com>",
+  "license": "MIT",
+  "scripts": {
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
