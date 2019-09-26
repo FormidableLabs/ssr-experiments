@@ -14,7 +14,7 @@
  * @param {Number} opts.conc    concurrency
  * @param {Number} opts.worker  path to worker script
  * @param {Array}  opts.args    arguments array for worker script
- * @returns {Promise}           execution result in a promise
+ * @returns {Promise<Array>}    execution result of `conc` runs
  */
 module.exports = async ({ conc, worker, args }) => {
   if (!worker) {

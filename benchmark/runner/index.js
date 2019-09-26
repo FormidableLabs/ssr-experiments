@@ -1,11 +1,12 @@
 "use strict";
-/*eslint-disable no-magic-numbers, max-nested-callbacks, promise/no-nesting*/
+/*eslint-disable no-console, no-magic-numbers, max-nested-callbacks, promise/no-nesting*/
 
 const os = require("os");
 const path = require("path");
 const table = require("markdown-table");
 const strip = require("strip-ansi");
-const { cyan, gray, green, magenta, red } = require("chalk");
+const chalk = require("chalk");
+const { cyan, gray, green, magenta, red } = chalk;
 
 const sync = require("../impl/sync/index");
 const jest = require("../impl/jest-worker/index");
@@ -67,12 +68,14 @@ const IMPLS = {
 };
 const DEMOS = {
   "react": [
-    { name: "1", repeat: 1, compare: comparePrefixAndLength }
-    //{ name: "1K", repeat: 1000, compare: comparePrefixAndLength }
-    // TODO: More scenarios
+    { name: "1", repeat: 1 },
+    { name: "1K", repeat: 1 * 1000 }
+    // TODO: REENABLE
     // { name: "10K", repeat: 10 * 1000 },
     // { name: "50K", repeat: 50 * 1000 }
-  ].filter(Boolean)
+  ]
+    .filter(Boolean)
+    .map((obj) => ({ ...obj, compare: comparePrefixAndLength }))
 };
 const NUM_CPUS = os.cpus().length;
 const CONCURRENCY = [
@@ -82,26 +85,27 @@ const CONCURRENCY = [
 ].filter(Boolean);
 
 // Create matrix of `[concurrency, demo, args, impl]`.
-const MATRIX = Object.keys(DEMOS).reduce(
-  (dMemo, demo) => dMemo.concat(DEMOS[demo].reduce(
-    (aMemo, args) => aMemo.concat(Object.keys(IMPLS).reduce(
-      (iMemo, impl) => iMemo.concat(
-        CONCURRENCY.map((conc) => ({ conc, demo, args, impl }))
+const MATRIX = CONCURRENCY.reduce(
+  (cMemo, conc) => cMemo.concat(Object.keys(DEMOS).reduce(
+    (dMemo, demo) => dMemo.concat(DEMOS[demo].reduce(
+      (aMemo, args) => aMemo.concat(Object.keys(IMPLS)
+        .map((impl) => ({ conc, demo, args, impl }))
       ), []
     )), []
   )), []
 );
 
-// TODO: REMOVE OR REINSTATE (old order `[concurrency, demo, args, impl]`)
-// const MATRIX_OLD = CONCURRENCY.reduce(
-//   (cMemo, con) => cMemo.concat(Object.keys(DEMOS).reduce(
-//     (dMemo, dKey) => dMemo.concat(DEMOS[dKey].reduce(
-//       (aMemo, opts) => aMemo.concat(Object.keys(IMPLS)
-//         .map((impl) => [con, dKey, opts, impl])
+// **Alternate Ordering**
+// const MATRIX = Object.keys(DEMOS).reduce(
+//   (dMemo, demo) => dMemo.concat(DEMOS[demo].reduce(
+//     (aMemo, args) => aMemo.concat(Object.keys(IMPLS).reduce(
+//       (iMemo, impl) => iMemo.concat(
+//         CONCURRENCY.map((conc) => ({ conc, demo, args, impl }))
 //       ), []
 //     )), []
 //   )), []
 // );
+
 
 // ----------------------------------------------------------------------------
 // Benchmark!
@@ -187,7 +191,27 @@ const benchmark = module.exports = () => Promise.resolve()
       ]);
     });
 
-    console.log(`\n${table(tableData, { // eslint-disable-line no-console
+    console.log(chalk`
+{cyan ## System information}
+
+* {gray os}: ${os.platform()} ${os.release()} ${os.arch()}
+* {gray node}: ${process.version}
+
+{cyan ## Benchmark}
+
+{gray ### Key}
+
+* {cyan Demo}: Scenario
+* {cyan Conc}: Level of concurrency _and_ number of executions
+* {cyan Args}: Options passed to worker (e.g. "number of times to repeat")
+* {cyan M loops}: Main thread loops on 1ms timer ({green bigger} is better)
+* {cyan W time}: Worker elapsed time ({green smaller} is better)
+* {cyan W result}: Correctness vs synchronous baseline
+
+{gray ### Results}
+`);
+
+    console.log(`${table(tableData, {
       align: ["l", "r", "r", "l", "r", "r", "r"],
       stringLength
     })}`);
@@ -204,7 +228,7 @@ const benchmark = module.exports = () => Promise.resolve()
 if (require.main === module) {
   benchmark()
     .catch((err) => {
-      console.error("ERROR", err.stack || err); // eslint-disable-line no-console
+      console.error("ERROR", err.stack || err);
       process.exit(1); // eslint-disable-line no-process-exit
     });
 }
