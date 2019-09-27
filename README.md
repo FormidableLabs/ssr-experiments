@@ -10,6 +10,14 @@ $ yarn
 $ yarn benchmark
 ```
 
+## Development
+
+If you want to see the timing of individual implementation executions try this:
+
+```sh
+$ DEBUG=ssr:timer yarn benchmark
+```
+
 ## Example results
 
 ### Key
