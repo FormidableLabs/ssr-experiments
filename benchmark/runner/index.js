@@ -56,7 +56,7 @@ const NUM_CPUS = os.cpus().length;
 const CONCURRENCY = [
   1,
   NUM_CPUS > 1 ? 2 : null,
-  NUM_CPUS > 2 ? 3 : null,
+  // NUM_CPUS > 2 ? 3 : null,
   NUM_CPUS > 3 ? NUM_CPUS : null
 ].filter(Boolean);
 

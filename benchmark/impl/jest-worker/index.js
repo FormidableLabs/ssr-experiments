@@ -22,7 +22,7 @@ const { debugTimer } = require("../../lib/util");
  *   the same way, but we end up with (for a 4 CPU machine for 50K render):
  *     - concurrency 1 render: `1429` ms
  *     - concurrency 2 render: `1816` ms
- *     - concurrency 3 render: `2934` ms
+ *     - concurrency 3 render: `2934` ms (informational, currently disabled)
  *     - concurrency 4 render: `5160` ms
  *
  * @param {Object} opts         options object
