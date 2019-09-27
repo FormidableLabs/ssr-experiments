@@ -15,7 +15,8 @@ const { debugTimer } = require("../../lib/util");
  * - Some startup cost for the worker pool.
  *
  * Notes:
- * - TODO: ADD TICKET
+ * - **Research**: More concurrency is unexpectedly slower for `jest-worker`
+ *   (https://github.com/FormidableLabs/ssr-experiments/issues/2)
  *   Currently, having **more** concurrency up to "num CPUs" is slower in
  *   parallel when it seemingly shouldn't. I've manually verified that the
  *   concurrency runs fine for timed no-ops and things seem to be functioning
