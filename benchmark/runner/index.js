@@ -194,6 +194,7 @@ const benchmark = module.exports = () => Promise.resolve()
 {cyan ## System information}
 
 * {gray os}: ${os.platform()} ${os.release()} ${os.arch()}
+* {gray cpus}: ${NUM_CPUS}
 * {gray node}: ${process.version}
 
 {cyan ## Benchmark}

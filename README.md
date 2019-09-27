@@ -24,6 +24,7 @@ $ yarn benchmark
 ### Node 8
 
 * os: darwin 18.7.0 x64
+* cpus: 4
 * node: v8.10.0
 
 | Demo  | Conc | Args | Impl | M loops | W time | W result |
@@ -50,6 +51,7 @@ $ yarn benchmark
 ### Node 10
 
 * os: darwin 18.7.0 x64
+* cpus: 4
 * node: v10.16.3
 
 | Demo  | Conc | Args | Impl | M loops | W time | W result |
@@ -76,6 +78,7 @@ $ yarn benchmark
 ### Node 12
 
 * os: darwin 18.7.0 x64
+* cpus: 4
 * node: v12.11.0
 
 | Demo  | Conc | Args | Impl | M loops | W time | W result |
