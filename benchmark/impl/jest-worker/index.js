@@ -38,11 +38,8 @@ module.exports = async ({ conc, worker, args }) => {
   }
 
   const workerFn = new Worker(require.resolve(worker), {
-    numWorkers: conc
-    // TODO: This currently fails on Node12 with DataCloneError.
-    // https://github.com/FormidableLabs/ssr-experiments/issues/3
-    // Currently _does_ work on node10 with `yarn benchmark --experimental-worker`
-    // , enableWorkerThreads: true // use workers if available
+    numWorkers: conc,
+    enableWorkerThreads: true // use workers if available
   });
 
   const concArr = Array.from(new Array(conc));
