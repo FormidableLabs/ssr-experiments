@@ -14,6 +14,17 @@ const { debugTimer } = require("../../lib/util");
  * Disadvantages
  * - Some startup cost for the worker pool.
  *
+ * Notes:
+ * - TODO: ADD TICKET
+ *   Currently, having **more** concurrency up to "num CPUs" is slower in
+ *   parallel when it seemingly shouldn't. I've manually verified that the
+ *   concurrency runs fine for timed no-ops and things seem to be functioning
+ *   the same way, but we end up with (for a 4 CPU machine for 50K render):
+ *     - concurrency 1 render: `1429` ms
+ *     - concurrency 2 render: `1816` ms
+ *     - concurrency 3 render: `2934` ms
+ *     - concurrency 4 render: `5160` ms
+ *
  * @param {Object} opts         options object
  * @param {Number} opts.conc    concurrency
  * @param {Number} opts.worker  path to worker script
