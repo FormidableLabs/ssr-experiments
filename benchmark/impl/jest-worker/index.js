@@ -36,7 +36,7 @@ module.exports = async ({ conc, worker, args }) => {
   const results = await Promise.all(concArr.map(() =>
     debugTimer({ type: "worker-render", demo: "jest", ...args }, () => workerFn.render(args))
   ));
-  workerFn.end(); // TODO: Move out of timed implementation.
+  workerFn.end(); // Note: Seems to take "no time".
 
   return results;
 };
