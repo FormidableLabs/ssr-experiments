@@ -11,6 +11,7 @@ const { cyan, gray, green, magenta, red } = chalk;
 const { timer, serial } = require("../lib/util");
 const sync = require("../impl/sync/index");
 const jest = require("../impl/jest-worker/index");
+const workerpool = require("../impl/workerpool/index");
 
 // ----------------------------------------------------------------------------
 // Globals
@@ -41,7 +42,8 @@ const stop = () => Promise.resolve();
 // Create matrix of implementations to run.
 const IMPLS = {
   sync,
-  jest
+  jest,
+  workerpool
 };
 const DEMOS = {
   "react": [

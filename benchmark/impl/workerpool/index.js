@@ -1,30 +1,24 @@
 "use strict";
 
-const Worker = require("jest-worker").default;
+const workerpool = require("workerpool");
 const { debugTimer } = require("../../lib/util");
+
+// Worker function (stringified and exec'd).
+function render(worker, args) { // eslint-disable-line func-style
+  const workerFn = require(worker); // eslint-disable-line global-require
+  return workerFn.render(args);
+}
 
 /**
  * Off-thread execution with child procs or worker threads via
- * [jest-worker](https://github.com/facebook/jest/tree/master/packages/jest-worker)
+ * [workerpool](https://github.com/josdejong/workerpool)
  *
  * Advantages:
  * - Very easy, usable API (vs. manual forking).
- * - Child procs or workers.
+ * - Child procs or workers (with auto-detect).
  *
  * Disadvantages
  * - Some startup cost for the worker pool.
- *
- * Notes:
- * - **Research**: More concurrency is unexpectedly slower for `jest-worker`
- *   (https://github.com/FormidableLabs/ssr-experiments/issues/2)
- *   Currently, having **more** concurrency up to "num CPUs" is slower in
- *   parallel when it seemingly shouldn't. I've manually verified that the
- *   concurrency runs fine for timed no-ops and things seem to be functioning
- *   the same way, but we end up with (for a 4 CPU machine for 50K render):
- *     - concurrency 1 render: `1429` ms
- *     - concurrency 2 render: `1816` ms
- *     - concurrency 3 render: `2934` ms (informational, currently disabled)
- *     - concurrency 4 render: `5160` ms
  *
  * @param {Object} opts         options object
  * @param {Number} opts.conc    concurrency
@@ -37,25 +31,29 @@ module.exports = async ({ conc, worker, args }) => {
     throw new Error("worker script path is required");
   }
 
-  const workerFn = new Worker(require.resolve(worker), {
-    numWorkers: conc
+  const pool = workerpool.pool({
+    minWorkers: conc,
+    maxWorkers: conc,
     // TODO: This currently fails on Node12 with DataCloneError.
     // https://github.com/FormidableLabs/ssr-experiments/issues/3
-    // Currently _does_ work on node10 with `yarn benchmark --experimental-worker`
-    // , enableWorkerThreads: true // use workers if available
+    // Remove this hard-code setting when fixed.
+    workerType: "process"
   });
 
   const concArr = Array.from(new Array(conc));
   const results = await Promise.all(concArr.map(() =>
-    debugTimer({ type: "worker-render", demo: "jest", ...args }, () => workerFn.render(args))
+    debugTimer(
+      { type: "worker-render", demo: "workerpool", ...args },
+      () => pool.exec(render, [worker, args])
+    )
   ));
-  workerFn.end(); // Note: Seems to take "no time".
+  pool.terminate();
 
   return results;
 };
 
 // For manual testing:
-// $ node benchmark/impl/jest-worker 20
+// $ node benchmark/impl/workerpool 20
 if (require.main === module) {
   module.exports({
     conc: 2,
