@@ -1,0 +1,22 @@
+---
+extends:
+  - formidable/configurations/es6-node
+  - plugin:import/errors
+
+plugins:
+  - import
+  - promise
+
+rules:
+  consistent-return: [error, { treatUndefinedAsUnspecified: true }]
+  import/no-unresolved: [error, { commonjs: true }]
+  promise/always-return: error
+  promise/no-return-wrap: error
+  promise/param-names: error
+  promise/catch-or-return: error
+  promise/no-native: off
+  promise/no-nesting: error
+  promise/no-promise-in-callback: error
+  promise/no-callback-in-promise: error
+  promise/avoid-new: error
+  prefer-spread: off
