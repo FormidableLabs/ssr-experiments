@@ -8,6 +8,7 @@ const strip = require("strip-ansi");
 const chalk = require("chalk");
 const { cyan, gray, green, magenta, red } = chalk;
 
+const { timer, serial } = require("../lib/util");
 const sync = require("../impl/sync/index");
 const jest = require("../impl/jest-worker/index");
 
@@ -26,30 +27,6 @@ const comparePrefixAndLength = (a, b) =>
 
 // Table
 const stringLength = (cell) => strip(cell).length; // fix alignment with chalk.
-
-// Timing
-const hrToMs = (hrtime) => Math.floor((hrtime[0] * 1e9 + hrtime[1]) / 1e6, 0);
-const timer = (prom) => {
-  const startTime = process.hrtime();
-
-  return prom().then((result) => ({
-    elapsed: hrToMs(process.hrtime(startTime)),
-    result
-  }));
-};
-
-// Run promises in serial.
-const serial = (proms) => {
-  const results = [];
-  return proms
-    // Add promises in serial. Accumulate results.
-    .reduce( // eslint-disable-next-line promise/always-return
-      (memo, prom) => memo.then(prom).then((r) => { results.push(r); }),
-      Promise.resolve()
-    )
-    // Return ordered results, like `Promise.all()`.
-    .then(() => results);
-};
 
 // ----------------------------------------------------------------------------
 // State

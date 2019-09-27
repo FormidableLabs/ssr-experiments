@@ -1,6 +1,7 @@
 "use strict";
 
 const Worker = require("jest-worker").default;
+const { debugTimer } = require("../../lib/util");
 
 /**
  * Off-thread execution with child procs or worker threads via
@@ -32,7 +33,9 @@ module.exports = async ({ conc, worker, args }) => {
   });
 
   const concArr = Array.from(new Array(conc));
-  const results = await Promise.all(concArr.map(() => workerFn.render(args)));
+  const results = await Promise.all(concArr.map(() =>
+    debugTimer({ type: "worker-render", demo: "jest", ...args }, () => workerFn.render(args))
+  ));
   workerFn.end(); // TODO: Move out of timed implementation.
 
   return results;

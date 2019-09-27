@@ -1,5 +1,7 @@
 "use strict";
 
+const { debugTimer } = require("../../lib/util");
+
 /**
  * Synchronous work **on** the main event loop.
  *
@@ -25,7 +27,10 @@ module.exports = async ({ conc, worker, args }) => {
 
   const results = [];
   for (let i = 0; i < conc; i++) {
-    results.push(await workerFn.render(args));
+    results.push(await debugTimer(
+      { type: "worker-render", demo: "sync", ...args },
+      () => workerFn.render(args)
+    ));
   }
 
   return results;
