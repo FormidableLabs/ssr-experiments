@@ -33,11 +33,7 @@ module.exports = async ({ conc, worker, args }) => {
 
   const pool = workerpool.pool({
     minWorkers: conc,
-    maxWorkers: conc,
-    // TODO: This currently fails on Node12 with DataCloneError.
-    // https://github.com/FormidableLabs/ssr-experiments/issues/3
-    // Remove this hard-code setting when fixed.
-    workerType: "process"
+    maxWorkers: conc
   });
 
   const concArr = Array.from(new Array(conc));

@@ -8,6 +8,14 @@ const strip = require("strip-ansi");
 const chalk = require("chalk");
 const { cyan, gray, green, magenta, red } = chalk;
 
+// Detect worker threads.
+let WORKER_THREADS_ENABLED = true;
+try {
+  require("worker_threads"); // eslint-disable-line global-require
+} catch (e) {
+  WORKER_THREADS_ENABLED = false;
+}
+
 const { timer, serial } = require("../lib/util");
 const sync = require("../impl/sync/index");
 const jest = require("../impl/jest-worker/index");
@@ -22,9 +30,10 @@ const MAIN_INTERVAL = 1; // ms
 // Helpers
 // ----------------------------------------------------------------------------
 // Comparisons: exact or "string looks close" (for React with random input)
-const defaultCompare = (a, b) => a === b;
-const comparePrefixAndLength = (a, b) =>
-  a.slice(0, 10) === b.slice(0, 10) && a.length === b.length;
+const compares = {
+  "default": (a, b) => a === b,
+  comparePrefixAndLength: (a, b) => a.slice(0, 10) === b.slice(0, 10) && a.length === b.length
+};
 
 // Table
 const stringLength = (cell) => strip(cell).length; // fix alignment with chalk.
@@ -52,7 +61,7 @@ const DEMOS = {
     { name: "50K", repeat: 50 * 1000 }
   ]
     .filter(Boolean)
-    .map((obj) => ({ ...obj, compare: comparePrefixAndLength }))
+    .map((obj) => ({ ...obj, compare: "comparePrefixAndLength" }))
 };
 const NUM_CPUS = os.cpus().length;
 const CONCURRENCY = [
@@ -139,7 +148,7 @@ const benchmark = module.exports = () => Promise.resolve()
       const work = data[0];
       const main = data[1];
       const { args, impl } = MATRIX[i];
-      const compare = args.compare || defaultCompare;
+      const compare = compares[args.compare] || compares.default;
 
       // Use first result as gold standard.
       const result = work.result[0];
@@ -175,6 +184,7 @@ const benchmark = module.exports = () => Promise.resolve()
 * {gray os}: ${os.platform()} ${os.release()} ${os.arch()}
 * {gray cpus}: ${NUM_CPUS}
 * {gray node}: ${process.version}
+* {gray execution}: ${WORKER_THREADS_ENABLED ? "worker thread" : "child process"}
 
 {cyan ## Benchmark}
 
