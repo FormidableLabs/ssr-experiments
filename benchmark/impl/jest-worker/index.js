@@ -43,9 +43,22 @@ module.exports = async ({ conc, worker, args }) => {
   });
 
   const concArr = Array.from(new Array(conc));
-  const results = await Promise.all(concArr.map(() =>
-    debugTimer({ type: "worker-render", demo: "jest", ...args }, () => workerFn.render(args))
-  ));
+  const results = await Promise.all(concArr.map(() => {
+    const buffer = new ArrayBuffer(1);
+    const view = new DataView(buffer);
+    view.setInt8(0, 1);
+
+    const workerArgs = { ...args, buffer };
+
+    // TODO: HERE -- not transferring array buffer correctly.
+    return debugTimer(
+      { type: "worker-render", demo: "jest", ...args },
+      () => workerFn.render(workerArgs).then((result) => {
+        console.log("TODO HERE BUFFER", view.getInt8(0));
+        return result;
+      })
+    );
+  }));
   workerFn.end(); // Note: Seems to take "no time".
 
   return results;

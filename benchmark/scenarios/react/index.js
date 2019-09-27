@@ -32,6 +32,12 @@ const Component = ({ repeat }) => (new Array(repeat)).fill(null).map(() => creat
  * @returns {Promise}           string result in a promise
  */
 const render = (opts) => Promise.resolve()
+  .then(() => {
+    // TODO(BUF): Mutate array buffer.
+    throw new Error(JSON.stringify(opts));
+    const view = new DataView(opts.buffer);
+    view.setInt8(0, 2);
+  })
   .then(() => renderToString(createElement(Component, {
     repeat: opts.repeat
   })));
