@@ -3,13 +3,15 @@
 const Worker = require("jest-worker").default;
 
 /**
- * Asynchronous work using worker threads when available,
+ * Off-thread execution with child procs or worker threads via
+ * [jest-worker](https://github.com/facebook/jest/tree/master/packages/jest-worker)
  *
  * Advantages:
- * - TODO
+ * - Very easy, usable API (vs. manual forking).
+ * - Child procs or workers.
  *
  * Disadvantages
- * - TODO
+ * - Some startup cost for the worker pool.
  *
  * @param {Object} opts         options object
  * @param {Number} opts.conc    concurrency
@@ -24,8 +26,9 @@ module.exports = async ({ conc, worker, args }) => {
 
   const workerFn = new Worker(require.resolve(worker), {
     numWorkers: conc
-    // TODO: This currently fails on Node12 with DataCloneError
-    // enableWorkerThreads: true // use workers if available
+    // TODO: This currently fails on Node12 with DataCloneError.
+    // Currently _does_ work on node10 with `yarn benchmark --experimental-worker`
+    // , enableWorkerThreads: true // use workers if available
   });
 
   const concArr = Array.from(new Array(conc));
