@@ -11,7 +11,7 @@ const { cyan, gray, green, magenta, red } = chalk;
 // Detect worker threads.
 let WORKER_THREADS_ENABLED = true;
 try {
-  require("worker_threads"); // eslint-disable-line global-require
+  require("worker_threads"); // eslint-disable-line global-require, import/no-unresolved
 } catch (e) {
   WORKER_THREADS_ENABLED = false;
 }

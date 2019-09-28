@@ -1,6 +1,15 @@
 "use strict";
 
+const log = require("debug")("ssr:impl:worker-threads");
 const { debugTimer } = require("../../lib/util");
+
+let workerThreads;
+try {
+  // eslint-disable-next-line global-require, import/no-unresolved
+  workerThreads = require("worker_threads");
+} catch (err) {
+  log("Could not require worker_threads");
+}
 
 /**
  * Manual worker threads implementation using `ArrayBuffer`.
@@ -21,6 +30,13 @@ module.exports = async ({ conc, worker, args }) => {
   if (!worker) {
     throw new Error("worker script path is required");
   }
+
+  if (!workerThreads) {
+    log(`No worker threads. Skipping ${JSON.stringify({ conc, worker, args })}`);
+    return [];
+  }
+
+  // TODO: HERE -- Start implementing worker threads.
 
   const workerFn = require(worker); // eslint-disable-line global-require
 
