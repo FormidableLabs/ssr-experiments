@@ -43,7 +43,7 @@ module.exports = async ({ conc, worker, args }) => {
   const results = [];
   for (let i = 0; i < conc; i++) {
     results.push(await debugTimer(
-      { type: "worker-render", demo: "sync", ...args },
+      { type: "worker-render", demo: "worker-threads", ...args },
       () => workerFn.render(args)
     ));
   }
