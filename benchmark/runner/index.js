@@ -118,8 +118,10 @@ const benchmark = module.exports = () => Promise.resolve()
             process.stdout.write("."); // progress indicator
             workDone = true;
             return {
-              elapsed: data.elapsed,
-              result: data.result
+              // Inner is _average_ of array values
+              innerElapsed: data.result.reduce((m, r) => m + r.elapsed, 0) / data.result.length,
+              outerElapsed: data.elapsed,
+              result: data.result.map((r) => r.result)
             };
           }),
 
@@ -137,7 +139,7 @@ const benchmark = module.exports = () => Promise.resolve()
     })
   ))
   .then((results) => {
-    const HEADER = ["Demo", "Conc", "Args", "Impl", "M loops", "W time", "W result"]
+    const HEADER = ["Demo", "Conc", "Args", "Impl", "M loops", "WI time", "WO time", "W result"]
       .map((t) => gray(t));
     const tableData = [HEADER];
 
@@ -173,7 +175,8 @@ const benchmark = module.exports = () => Promise.resolve()
         cyan(args.name),
         magenta(impl),
         main,
-        work.elapsed,
+        Math.floor(work.innerElapsed),
+        work.outerElapsed,
         isCorrect ? green("pass") : red("fail")
       ]);
     });
@@ -194,7 +197,8 @@ const benchmark = module.exports = () => Promise.resolve()
 * {cyan Conc}: Level of concurrency _and_ number of executions
 * {cyan Args}: Options passed to worker (e.g. "number of times to repeat")
 * {cyan M loops}: Main thread loops on 1ms timer ({green bigger} is better)
-* {cyan W time}: Worker elapsed time ({green smaller} is better)
+* {cyan WI time}: Single worker average "inner" time inside worker ({green smaller} is better)
+* {cyan WO time}: Total worker "outer" time across worker ({green smaller} is better)
 * {cyan W result}: Correctness vs synchronous baseline
 
 {gray ### Results}
