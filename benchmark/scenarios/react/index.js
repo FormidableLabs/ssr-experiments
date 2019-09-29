@@ -3,6 +3,8 @@
 const { createElement } = require("react");
 const { renderToString } = require("react-dom/server");
 
+const { timer } = require("../../lib/util");
+
 const randomColor = () => // eslint-disable-next-line no-magic-numbers, prefer-template
   "#" + ("00000" + Math.floor(Math.random() * 0x1000000).toString(16)).substr(-6);
 
@@ -29,12 +31,12 @@ const Component = ({ repeat }) => (new Array(repeat)).fill(null).map(() => creat
  *
  * @param {Object} opts         options object
  * @param {Number} opts.repeat  number of times to repeat string.
- * @returns {Promise}           string result in a promise
+ * @returns {Promise}           `{ result<string>, elapsed<Number> }` in a promise
  */
-const render = (opts) => Promise.resolve()
+const render = (opts) => timer(() => Promise.resolve()
   .then(() => renderToString(createElement(Component, {
     repeat: opts.repeat
-  })));
+  }))));
 
 module.exports = {
   render
