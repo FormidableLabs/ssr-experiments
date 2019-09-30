@@ -59,6 +59,10 @@ const DEMOS = {
     { name: "10ms", wait: 10 },
     { name: "1s", wait: 1000 }
   ],
+  "fib": [
+    { name: "4", number: 4 }, // fib(4) = 3
+    { name: "40", number: 40 } // fib(40) = 102334155
+  ],
   "react": [
     { name: "1", repeat: 1 },
     { name: "5K", repeat: 1 * 1000 },
