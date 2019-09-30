@@ -55,9 +55,13 @@ const IMPLS = {
   workerpool
 };
 const DEMOS = {
+  "noop": [
+    { name: "10ms", wait: 10 },
+    { name: "1s", wait: 1000 }
+  ],
   "react": [
-    // { name: "1", repeat: 1 },
-    // { name: "5K", repeat: 1 * 1000 },
+    { name: "1", repeat: 1 },
+    { name: "5K", repeat: 1 * 1000 },
     { name: "50K", repeat: 50 * 1000 }
   ]
     .filter(Boolean)

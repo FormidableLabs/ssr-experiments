@@ -31,6 +31,7 @@ module.exports = async ({ conc, worker, args }) => {
     throw new Error("worker script path is required");
   }
 
+  // TODO: Do multiple 1 worker concurrent pools as experiment.
   const pool = workerpool.pool({
     minWorkers: conc,
     maxWorkers: conc
