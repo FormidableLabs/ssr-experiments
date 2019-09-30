@@ -38,7 +38,7 @@ module.exports = async ({ conc, worker, args }) => {
   }
 
   const workerFn = new Worker(require.resolve(worker), {
-    numWorkers: 1,
+    numWorkers: conc,
     enableWorkerThreads: true, // use workers if available
     forkOptions: {
       stdio: "inherit" // allow in-proc console.log to show in parent terminal
