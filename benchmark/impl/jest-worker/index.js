@@ -38,8 +38,11 @@ module.exports = async ({ conc, worker, args }) => {
   }
 
   const workerFn = new Worker(require.resolve(worker), {
-    numWorkers: conc,
-    enableWorkerThreads: true // use workers if available
+    numWorkers: 1,
+    enableWorkerThreads: true, // use workers if available
+    forkOptions: {
+      stdio: "inherit" // allow in-proc console.log to show in parent terminal
+    }
   });
 
   const concArr = Array.from(new Array(conc));

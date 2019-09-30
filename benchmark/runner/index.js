@@ -56,8 +56,8 @@ const IMPLS = {
 };
 const DEMOS = {
   "react": [
-    { name: "1", repeat: 1 },
-    { name: "5K", repeat: 1 * 1000 },
+    // { name: "1", repeat: 1 },
+    // { name: "5K", repeat: 1 * 1000 },
     { name: "50K", repeat: 50 * 1000 }
   ]
     .filter(Boolean)
