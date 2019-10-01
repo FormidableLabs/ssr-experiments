@@ -46,9 +46,10 @@ module.exports = async ({ conc, worker, args }) => {
   });
 
   const concArr = Array.from(new Array(conc));
-  const results = await Promise.all(concArr.map(() =>
-    debugTimer({ type: "worker-render", demo: "jest", ...args }, () => workerFn.render(args))
-  ));
+  const results = await Promise.all(concArr.map(() => {
+    const opts = { type: "impl", impl: "jest", ...args };
+    return debugTimer(() => workerFn.render(opts), { opts });
+  }));
   workerFn.end(); // Note: Seems to take "no time".
 
   return results;

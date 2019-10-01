@@ -2,25 +2,54 @@
 
 const logTimer = require("debug")("ssr:timer");
 
+// Dynamically add types of timers.
+const implTimers = {};
+const demoTimers = {};
+
 // Timing
 // eslint-disable-next-line no-magic-numbers
 const hrToMs = (hrtime) => Math.floor((hrtime[0] * 1e9 + hrtime[1]) / 1e6, 0);
 
-const timer = (prom) => {
-  const startTime = process.hrtime();
+// Timer that returns `{ result, elapsed }`.
+const timer = (prom, { withLog = false, opts = {} } = {}) => {
+  const { impl, demo, type, name } = opts;
+  let log;
+  if (impl) {
+    implTimers[demo] = implTimers[demo] || {};
+    implTimers[demo][impl] = implTimers[demo][impl] || logTimer.extend(`${demo}:${impl}`);
+    log = implTimers[demo][impl];
+  } else {
+    demoTimers[demo] = demoTimers[demo] || logTimer.extend(demo);
+    log = demoTimers[demo];
+  }
 
-  return prom().then((result) => ({
-    elapsed: hrToMs(process.hrtime(startTime)),
-    result
-  }));
+  const { pid } = process;
+  const start = (new Date()).toISOString();
+  const startTime = process.hrtime();
+  if (withLog) { log("%o", { type, name, pid, start }); }
+
+  return prom().then((result) => {
+    const elapsed = hrToMs(process.hrtime(startTime));
+    if (withLog) { log("%o", { type, name, pid, start, elapsed }); }
+
+    return { elapsed, result };
+  });
 };
 
-// Debugging timer calls like `DEBUG=ssr:timer yarn benchmark`
-const debugTimer = (args, prom) => {
+// Debugging timer calls like `DEBUG=ssr:timer yarn benchmark` without changing
+// result.
+const debugTimer = (prom, { opts = {} } = {}) => {
+  const { pid } = process;
+  const start = (new Date()).toISOString();
   const startTime = hrToMs(process.hrtime());
 
   return prom().then((result) => {
-    logTimer(`${JSON.stringify(args)}: Elapsed: ${hrToMs(process.hrtime()) - startTime}`);
+    logTimer("%o", {
+      ...opts,
+      pid,
+      start,
+      elapsed: hrToMs(process.hrtime()) - startTime
+    });
     return result;
   });
 };

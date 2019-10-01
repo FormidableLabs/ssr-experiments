@@ -25,12 +25,11 @@ module.exports = async ({ conc, worker, args }) => {
 
   const workerFn = require(worker); // eslint-disable-line global-require
 
+  let opts;
   const results = [];
   for (let i = 0; i < conc; i++) {
-    results.push(await debugTimer(
-      { type: "worker-render", demo: "sync", ...args },
-      () => workerFn.render(args)
-    ));
+    opts = { type: "impl", impl: "sync", ...args };
+    results.push(await debugTimer(() => workerFn.render(args), { opts }));
   }
 
   return results;
