@@ -37,12 +37,10 @@ module.exports = async ({ conc, worker, args }) => {
   });
 
   const concArr = Array.from(new Array(conc));
-  const results = await Promise.all(concArr.map(() =>
-    debugTimer(
-      { type: "worker-render", demo: "workerpool", ...args },
-      () => pool.exec(render, [worker, args])
-    )
-  ));
+  const results = await Promise.all(concArr.map(() => {
+    const opts = { type: "impl", impl: "workerpool", ...args };
+    return debugTimer(() => pool.exec(render, [worker, opts]), { opts });
+  }));
   pool.terminate();
 
   return results;

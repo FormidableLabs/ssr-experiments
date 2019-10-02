@@ -33,10 +33,12 @@ const Component = ({ repeat }) => (new Array(repeat)).fill(null).map(() => creat
  * @param {Number} opts.repeat  number of times to repeat string.
  * @returns {Promise}           `{ result<string>, elapsed<Number> }` in a promise
  */
-const render = (opts) => timer(() => Promise.resolve()
-  .then(() => renderToString(createElement(Component, {
+const render = (opts) => timer(
+  () => Promise.resolve().then(() => renderToString(createElement(Component, {
     repeat: opts.repeat
-  }))));
+  }))),
+  { opts: { type: "scenario", demo: "react", ...opts }, withLog: true }
+);
 
 module.exports = {
   render
