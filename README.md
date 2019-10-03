@@ -32,6 +32,20 @@ If you want to see the timing of individual implementation executions try this:
 $ DEBUG=ssr:timer yarn benchmark
 ```
 
+We can also filter demos, implementations, and concurrencies to benchmark:
+
+```sh
+$ yarn benchmark -h
+Usage: benchmark [options]
+
+Options:
+  -V, --version      output the version number
+  -d, --demo <name>  Demos (default: "noop,fib,react")
+  -i, --impl <name>  Implementations (default: "noop,fib,react")
+  -c, --conc <name>  Concurrency values (default: "1,2,4")
+  -h, --help         output usage information
+```
+
 ## Example results
 
 ### Key

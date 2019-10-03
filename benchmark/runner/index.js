@@ -3,6 +3,8 @@
 
 const os = require("os");
 const path = require("path");
+const { version } = require("../../package.json");
+const program = require("commander");
 const table = require("markdown-table");
 const strip = require("strip-ansi");
 const chalk = require("chalk");
@@ -107,7 +109,9 @@ const MATRIX = CONCURRENCY.reduce(
 // ----------------------------------------------------------------------------
 //
 // Run pairs of (worker + main thread) in serial to accurately time.
-const benchmark = module.exports = () => Promise.resolve()
+// TODO(CLI): Filter to benchOpts
+// TODO(CLI): Filter subkeys too for like `react+50K`?
+const benchmark = module.exports = (benchOpts) => Promise.resolve()
   .then(() => start())
   .then(() => serial(
     MATRIX.map(({ conc, demo, args, impl }) => {
@@ -227,7 +231,22 @@ const benchmark = module.exports = () => Promise.resolve()
   .catch((err) => stop().then(() => Promise.reject(err)));
 
 if (require.main === module) {
-  benchmark()
+  const split = (val) => val ? val.split(",") : [];
+
+  program
+    .version(version)
+    .name("benchmark")
+    .option("-d, --demo <name>", "Demos", Object.keys(DEMOS).join(","))
+    .option("-i, --impl <name>", "Implementations", Object.keys(DEMOS).join(","))
+    .option("-c, --conc <name>", "Concurrency values", CONCURRENCY.join(","));
+
+  program.parse(process.argv);
+
+  benchmark({
+    demo: split(program.demo),
+    impl: split(program.impl),
+    conc: split(program.conc)
+  })
     .catch((err) => {
       console.error("ERROR", err.stack || err);
       process.exit(1); // eslint-disable-line no-process-exit
