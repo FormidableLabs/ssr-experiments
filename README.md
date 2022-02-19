@@ -262,3 +262,8 @@ $ DEBUG=ssr:timer yarn benchmark
 | react |    4 |  50K | sync       |       1 |    1337 |    5351 | pass     |
 | react |    4 |  50K | jest       |    3068 |    3788 |    4230 | pass     |
 | react |    4 |  50K | workerpool |    3582 |    4418 |    4941 | pass     |
+
+
+## Maintenance Status
+
+**Archived:** This project is no longer maintained by Formidable. We are no longer responding to issues or pull requests unless they relate to security concerns. We encourage interested developers to fork this project and make it their own!
